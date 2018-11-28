@@ -13,7 +13,10 @@ library(ggraph)
 ```
 
 ```{r}
-df_munge_long <- read_csv("stage/munge_long.csv")
+df_munge_long <- read_csv("stage/munge_long.csv",
+                          n_max = 100000) %>%
+    rename(Source = From, Target = To) %>%
+    write_csv("stage/gephi_output.csv")
 ```
 
 ```{r}
