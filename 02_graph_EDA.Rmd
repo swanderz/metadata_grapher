@@ -19,14 +19,10 @@ df_munge_long <- read_csv("stage/munge_long.csv",
     write_csv("stage/gephi_output.csv")
 ```
 
-```{r}
-df_munge_long <- df_munge_long %>%
-    write_csv("stage/munge_long.csv")
-```
 
 ```{r}
 df_munge_small <- df_munge_long %>%
-    select(From, To)
+    select(Source, Target)
 ```
 
 ```{r}
@@ -52,15 +48,30 @@ g_munge <- df_munge_small_summarize %>%
     activate(edges) %>%
     mutate(e_mutual = edge_is_mutual()) %>%
     activate(nodes) %>%
+    
     mutate(n_alone = node_is_isolated(),
            n_strength = centrality_degree(),
            cent_auth = centrality_authority(),
            core_in = node_coreness(mode = "in"),
-           core_out = node_coreness(mode = "out"))
+           core_out = node_coreness(mode = "out"),
+           community = as.factor(group_infomap()))
 
 munge_edges <- g_munge %>% activate(edges) %>% as_tibble()
 munge_nodes <- g_munge %>% activate(nodes) %>% as_tibble()
 ```
+
+```{r}
+library(igraph)
+```
+
+```{r}
+test <- graph_from_data_frame(munge_edges, directed = TRUE)
+
+write_graph(g_munge, "stage/output2.graphml", format = "graphml")
+
+write_graph(test, "stage/output.graphml", format = "graphml")
+```
+
 
 ```{r}
 
